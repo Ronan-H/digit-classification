@@ -106,3 +106,6 @@ venv.bak/
 # PyCharm
 __pycache__/
 .idea/
+
+# IPython Notebook
+.ipynb_checkpoints
