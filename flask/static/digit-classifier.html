@@ -10,7 +10,8 @@
         <h2>Digit classifier</h1>
         <h4>Draw a digit below to see how the neural network classifies it</h2>
 
-        <canvas id="digit-canvas" width="200" height="200"></canvas>
+        <canvas id="digit-canvas" width="150" height="150"></canvas>
+        <br />
         <input id="clear-button" type="button" value="Clear" onclick="clearCanvas()" />
 
         <script>
@@ -22,7 +23,8 @@
                 prevY = 0,
                 currY = 0;
             var strokeStyle = "black",
-                lineWidth = 4;
+                lineWidth = 12,
+                halfLineWidth = lineWidth / 2;
             var canvasWidth, canvasHeight;
             
                 function init() {
@@ -30,6 +32,9 @@
                     ctx = canvas.getContext("2d");
                     canvasWidth = canvas.width;
                     canvasHeight = canvas.height;
+                    ctx.fillStyle = strokeStyle;
+                    ctx.strokeStyle = strokeStyle;
+                    ctx.lineWidth = lineWidth;
                 
                     canvas.addEventListener("mousemove", function (e) {
                         onMouseEvent('move', e)
@@ -49,18 +54,16 @@
                     switch (res) {
                         case "down":
                             drawing = true;
+                            ctx.moveTo(currX, currY);
 
-                            prevX = currX;
-                            prevY = currY;
                             currX = e.clientX - canvas.offsetLeft;
                             currY = e.clientY - canvas.offsetTop;
 
-                            ctx.beginPath();
-                            ctx.fillStyle = strokeStyle;
-                            ctx.fillRect(currX, currY, 2, 2);
-                            ctx.closePath();
+                            fillCircle();
                             break;
                         case "up":
+                        case "out":
+                            fillCircle();
                             drawing = false;
                             break;
                         case "move":
@@ -69,20 +72,24 @@
                                 prevY = currY;
                                 currX = e.clientX - canvas.offsetLeft;
                                 currY = e.clientY - canvas.offsetTop;
-                                draw();
+                                connectLine();
                             }
                             break;
                     }
                 }
 
-                function draw() {
-                    ctx.beginPath();
-                    ctx.moveTo(prevX, prevY);
+                function connectLine() {
                     ctx.lineTo(currX, currY);
-                    ctx.strokeStyle = strokeStyle;
-                    ctx.lineWidth = lineWidth;
                     ctx.stroke();
-                    ctx.closePath();
+                }
+
+                function fillCircle() {
+                    ctx.beginPath();
+                    ctx.arc(currX, currY, halfLineWidth, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.closePath()
+                    ctx.beginPath();
+                    ctx.lineTo(currX, currY);
                 }
 
                 function clearCanvas() {
