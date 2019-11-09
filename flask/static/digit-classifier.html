@@ -101,13 +101,31 @@
                 // AJAX stuff
                 // https://stackoverflow.com/a/35203184
                 $("#classify-button").click(function (e) {
+                    var canvasSize = 150;
+
+                    // load canvas data
+                    var rawCanvasData = ctx.getImageData(0, 0, canvasSize, canvasSize)
+                    // compress canvas data to a more appropriate form
+                    var pixelArr = rawCanvasData.data;
+                    var pixelArrComp = []
+
+                    for (var i = 3; i < pixelArr.length; i += 4) {
+                        // decide if this pixel is "on" or not
+                        var pixelBlack = (pixelArr[i] > 200);
+                        pixelArrComp.push(pixelBlack)
+                    }
+
+                    var compressedData = {
+                        width: rawCanvasData.width,
+                        height: rawCanvasData.height,
+                        pixelData: pixelArrComp
+                    }
+
+
                     $.ajax({
                         type: "POST",
                         url: "/classify",
-                        data: { 
-                            id: "Hello World",
-                            pixel_data: ctx.getImageData(0, 0, 150, 150)
-                        },
+                        data: compressedData,
                         success: function(result) {
                             alert('HTTP status OK');
                         },
