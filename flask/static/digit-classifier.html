@@ -105,13 +105,14 @@
                         type: "POST",
                         url: "/classify",
                         data: { 
-                            id: "Hello World"
+                            id: "Hello World",
+                            pixel_data: ctx.getImageData(0, 0, 150, 150)
                         },
                         success: function(result) {
-                            alert('ok');
+                            alert('HTTP status OK');
                         },
                         error: function(result) {
-                            alert('error');
+                            alert('HTTP error');
                         }
                     });
                 });
