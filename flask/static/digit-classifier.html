@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+            <meta charset="utf-8"/>
+            <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body onload="init()">
+        <h2>Digit classifier</h1>
+        <h4>Draw a digit below to see how the neural network classifies it</h2>
+
+        <canvas id="digit-canvas" width="200" height="200"></canvas>
+        <input id="clear-button" type="button" value="Clear" onclick="clear()">
+
+        <script>
+            // adapted from https://stackoverflow.com/a/8398189
+            var canvas, ctx;
+            var drawing = false;
+            var prevX = 0,
+                currX = 0,
+                prevY = 0,
+                currY = 0;
+            var strokeStyle = "black",
+                lineWidth = 4;
+            
+                function init() {
+                    canvas = document.getElementById('digit-canvas');
+                    ctx = canvas.getContext("2d");
+                    w = canvas.width;
+                    h = canvas.height;
+                
+                    canvas.addEventListener("mousemove", function (e) {
+                        onMouseEvent('move', e)
+                    }, false);
+                    canvas.addEventListener("mousedown", function (e) {
+                        onMouseEvent('down', e)
+                    }, false);
+                    canvas.addEventListener("mouseup", function (e) {
+                        onMouseEvent('up', e)
+                    }, false);
+                    canvas.addEventListener("mouseout", function (e) {
+                        onMouseEvent('out', e)
+                    }, false);
+                }
+
+                function onMouseEvent(res, e) {
+                    switch (res) {
+                        case "down":
+                            drawing = true;
+
+                            prevX = currX;
+                            prevY = currY;
+                            currX = e.clientX - canvas.offsetLeft;
+                            currY = e.clientY - canvas.offsetTop;
+
+                            ctx.beginPath();
+                            ctx.fillStyle = strokeStyle;
+                            ctx.fillRect(currX, currY, 2, 2);
+                            ctx.closePath();
+                            break;
+                        case "up":
+                            drawing = false;
+                            break;
+                        case "move":
+                            if (drawing) {
+                                prevX = currX;
+                                prevY = currY;
+                                currX = e.clientX - canvas.offsetLeft;
+                                currY = e.clientY - canvas.offsetTop;
+                                draw();
+                            }
+                            break;
+                    }
+                }
+
+                function draw() {
+                    ctx.beginPath();
+                    ctx.moveTo(prevX, prevY);
+                    ctx.lineTo(currX, currY);
+                    ctx.strokeStyle = strokeStyle;
+                    ctx.lineWidth = lineWidth;
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+
+                function clear() {
+                    ctx.clearRect(0, 0, w, h);
+                }
+        </script>
+    </body>
+</html>
