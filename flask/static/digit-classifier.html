@@ -11,7 +11,7 @@
         <h4>Draw a digit below to see how the neural network classifies it</h2>
 
         <canvas id="digit-canvas" width="200" height="200"></canvas>
-        <input id="clear-button" type="button" value="Clear" onclick="clear()">
+        <input id="clear-button" type="button" value="Clear" onclick="clearCanvas()" />
 
         <script>
             // adapted from https://stackoverflow.com/a/8398189
@@ -23,12 +23,13 @@
                 currY = 0;
             var strokeStyle = "black",
                 lineWidth = 4;
+            var canvasWidth, canvasHeight;
             
                 function init() {
                     canvas = document.getElementById('digit-canvas');
                     ctx = canvas.getContext("2d");
-                    w = canvas.width;
-                    h = canvas.height;
+                    canvasWidth = canvas.width;
+                    canvasHeight = canvas.height;
                 
                     canvas.addEventListener("mousemove", function (e) {
                         onMouseEvent('move', e)
@@ -84,8 +85,8 @@
                     ctx.closePath();
                 }
 
-                function clear() {
-                    ctx.clearRect(0, 0, w, h);
+                function clearCanvas() {
+                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
                 }
         </script>
     </body>
