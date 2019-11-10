@@ -107,7 +107,17 @@ def post_data_to_image(pixel_data, img_size):
     """
 
     # convert boolean array to values from 0-255
-    pixel_nums = np.array([255 if v == "true" else 0 for v in pixel_data], dtype=np.uint8)
+    # pixel_nums = np.array([255 if v == "true" else 0 for v in pixel_data], dtype=np.uint8)
+    pixel_nums = np.zeros(img_size * img_size, dtype=np.uint8)
+    pixel_value = 255
+    index = 0
+
+    for i, length in enumerate(pixel_data):
+        for j in range(int(length)):
+            pixel_nums[index] = pixel_value
+            index += 1
+        pixel_value = 255 if pixel_value == 0 else 0
+
     # reshape into 2d array
     reshaped = pixel_nums.reshape((img_size, img_size))
     return Image.fromarray(reshaped)

@@ -114,10 +114,31 @@
                         pixelArrComp.push(pixelBlack)
                     }
 
+                    var pixelArrCounts = []
+                    if (!pixelArrComp[0]) {
+                        pixelArrCounts.push(0)
+                    }
+                    var on = pixelArrComp[0]
+                    var count = 0;
+
+                    for (var i = 0; i < pixelArrComp.length; i++) {
+                        count++;
+
+                        if (pixelArrComp[i] != on) {
+                            pixelArrCounts.push(count);
+                            on = !on;
+                            count = 0;
+                        }
+                    }
+
+                    if(count > 0) {
+                        pixelArrCounts.push(count);
+                    }
+
                     var compressedData = {
                         width: rawCanvasData.width,
                         height: rawCanvasData.height,
-                        pixelData: pixelArrComp
+                        pixelData: pixelArrCounts
                     }
 
                     $.ajax({
