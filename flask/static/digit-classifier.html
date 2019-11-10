@@ -11,10 +11,11 @@
         <h2>Digit classifier</h2>
         <h4>Draw a digit below to see how the neural network classifies it</h4>
 
-        <canvas id="digit-canvas" width="150" height="150"></canvas>
+        <canvas id="digit-canvas" width="250" height="250"></canvas>
         <br />
         <input id="clear-button" type="button" value="Clear" onclick="clearCanvas()" />
         <input id="classify-button" type="button" value="Classify" />
+        <p id="classification">Classification: (please press Classify)</p>
 
         <script>
             // adapted from https://stackoverflow.com/a/8398189
@@ -25,7 +26,7 @@
                 prevY = 0,
                 currY = 0;
             var strokeStyle = "black",
-                lineWidth = 12,
+                lineWidth = 19,
                 halfLineWidth = lineWidth / 2;
             var canvasWidth, canvasHeight;
             
@@ -101,7 +102,9 @@
                 // AJAX stuff
                 // https://stackoverflow.com/a/35203184
                 $("#classify-button").click(function (e) {
-                    var canvasSize = 150;
+                    $("#classification").text("Classification: (loading)");
+
+                    var canvasSize = 250;
 
                     // load canvas data
                     var rawCanvasData = ctx.getImageData(0, 0, canvasSize, canvasSize)
@@ -121,13 +124,12 @@
                         pixelData: pixelArrComp
                     }
 
-
                     $.ajax({
                         type: "POST",
                         url: "/classify",
                         data: compressedData,
                         success: function(result) {
-                            alert('HTTP status OK');
+                            $("#classification").text("Classification: " + result);
                         },
                         error: function(result) {
                             alert('HTTP error');
