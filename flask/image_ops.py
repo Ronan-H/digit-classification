@@ -101,21 +101,22 @@ def center_digit(img):
     return img.transform(img.size, Image.AFFINE, (a, b, c, d, e, f))
 
 
-def post_data_to_image(pixel_data, img_size):
+def post_data_to_image(image_data, img_size):
     """
     Converts data from the post form into a PIL Image
     """
 
-    # convert boolean array to values from 0-255
-    # pixel_nums = np.array([255 if v == "true" else 0 for v in pixel_data], dtype=np.uint8)
+    # decompress image data
     pixel_nums = np.zeros(img_size * img_size, dtype=np.uint8)
     pixel_value = 255
     index = 0
 
-    for i, length in enumerate(pixel_data):
+    for i, length in enumerate(image_data):
         for j in range(int(length)):
             pixel_nums[index] = pixel_value
             index += 1
+
+        # invert pixel colour
         pixel_value = 255 if pixel_value == 0 else 0
 
     # reshape into 2d array
@@ -123,7 +124,7 @@ def post_data_to_image(pixel_data, img_size):
     return Image.fromarray(reshaped)
 
 
-def mnistify_image(img):
+def mnistify_image(img, save_stages=False):
     """
     Converts the canvas image into an image that resembles a digit from the MNIST
     data set as closely as possible. This is broken down into 4 steps:
@@ -132,21 +133,21 @@ def mnistify_image(img):
     2. Extend image out into a square
     3. Scale the image down to 20x20, and expand edges out to 28x28
     4. Center digit within image based on Center of Mass
+
+    :param save_stages: Saves each stage of image processing as a file if True
     """
 
-    img.save("debug/0-canvas-img.png")
-
     cropped = crop_to_digit(img)
-    cropped.save("debug/1-cropped.png")
-
     squared = expand_to_square(cropped)
-    squared.save("debug/2-squared.png")
-
     scaled = scale_to_mnist(squared)
-    scaled.save("debug/3-scaled.png")
-
     centered = center_digit(scaled)
-    centered.save("debug/4-centered-final.png")
+
+    if save_stages:
+        img.save("debug/0-canvas-img.png")
+        cropped.save("debug/1-cropped.png")
+        squared.save("debug/2-squared.png")
+        scaled.save("debug/3-scaled.png")
+        centered.save("debug/4-centered-final.png")
 
     return centered
 

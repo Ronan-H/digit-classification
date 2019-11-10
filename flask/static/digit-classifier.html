@@ -30,129 +30,135 @@
                 halfLineWidth = lineWidth / 2;
             var canvasWidth, canvasHeight;
             
-                function init() {
-                    canvas = document.getElementById('digit-canvas');
-                    ctx = canvas.getContext("2d");
-                    canvasWidth = canvas.width;
-                    canvasHeight = canvas.height;
-                    ctx.fillStyle = strokeStyle;
-                    ctx.strokeStyle = strokeStyle;
-                    ctx.lineWidth = lineWidth;
-                
-                    canvas.addEventListener("mousemove", function (e) {
-                        onMouseEvent('move', e)
-                    }, false);
-                    canvas.addEventListener("mousedown", function (e) {
-                        onMouseEvent('down', e)
-                    }, false);
-                    canvas.addEventListener("mouseup", function (e) {
-                        onMouseEvent('up', e)
-                    }, false);
-                    canvas.addEventListener("mouseout", function (e) {
-                        onMouseEvent('out', e)
-                    }, false);
-                }
+            function init() {
+                canvas = document.getElementById('digit-canvas');
+                ctx = canvas.getContext("2d");
+                canvasWidth = canvas.width;
+                canvasHeight = canvas.height;
+                ctx.fillStyle = strokeStyle;
+                ctx.strokeStyle = strokeStyle;
+                ctx.lineWidth = lineWidth;
+            
+                canvas.addEventListener("mousemove", function (e) {
+                    onMouseEvent('move', e)
+                }, false);
+                canvas.addEventListener("mousedown", function (e) {
+                    onMouseEvent('down', e)
+                }, false);
+                canvas.addEventListener("mouseup", function (e) {
+                    onMouseEvent('up', e)
+                }, false);
+                canvas.addEventListener("mouseout", function (e) {
+                    onMouseEvent('out', e)
+                }, false);
+            }
 
-                function onMouseEvent(res, e) {
-                    currX = e.clientX - canvas.offsetLeft;
-                    currY = e.clientY - canvas.offsetTop;
+            function onMouseEvent(res, e) {
+                currX = e.clientX - canvas.offsetLeft;
+                currY = e.clientY - canvas.offsetTop;
 
-                    switch (res) {
-                        case "down":
-                            drawing = true;
-                            ctx.moveTo(currX, currY);
-                            fillCircle();
-                            break;
-                        case "up":
-                            fillCircle();
-                        case "out":
-                            drawing = false;
-                            break;
-                        case "move":
-                            if (drawing) {
-                                connectLine();
-                            }
-                            break;
-                    }
-                }
-
-                function connectLine() {
-                    ctx.lineTo(currX, currY);
-                    ctx.stroke();
-                    fillCircle();
-                }
-
-                function fillCircle() {
-                    ctx.beginPath();
-                    ctx.arc(currX, currY, halfLineWidth, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.closePath()
-                    ctx.beginPath();
-                    ctx.lineTo(currX, currY);
-                }
-
-                function clearCanvas() {
-                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-                }
-
-                // AJAX stuff
-                // https://stackoverflow.com/a/35203184
-                $("#classify-button").click(function (e) {
-                    $("#classification").text("Classification: (loading)");
-
-                    var canvasSize = 250;
-
-                    // load canvas data
-                    var rawCanvasData = ctx.getImageData(0, 0, canvasSize, canvasSize)
-                    // compress canvas data to a more appropriate form
-                    var pixelArr = rawCanvasData.data;
-                    var pixelArrComp = []
-
-                    for (var i = 3; i < pixelArr.length; i += 4) {
-                        // decide if this pixel is "on" or not
-                        var pixelBlack = (pixelArr[i] > 200);
-                        pixelArrComp.push(pixelBlack)
-                    }
-
-                    var pixelArrCounts = []
-                    if (!pixelArrComp[0]) {
-                        pixelArrCounts.push(0)
-                    }
-                    var on = pixelArrComp[0]
-                    var count = 0;
-
-                    for (var i = 0; i < pixelArrComp.length; i++) {
-                        count++;
-
-                        if (pixelArrComp[i] != on) {
-                            pixelArrCounts.push(count);
-                            on = !on;
-                            count = 0;
+                switch (res) {
+                    case "down":
+                        drawing = true;
+                        ctx.moveTo(currX, currY);
+                        fillCircle();
+                        break;
+                    case "up":
+                        fillCircle();
+                        classify();
+                    case "out":
+                        drawing = false;
+                        break;
+                    case "move":
+                        if (drawing) {
+                            connectLine();
                         }
-                    }
+                        break;
+                }
+            }
 
-                    if(count > 0) {
+            function connectLine() {
+                ctx.lineTo(currX, currY);
+                ctx.stroke();
+                fillCircle();
+            }
+
+            function fillCircle() {
+                ctx.beginPath();
+                ctx.arc(currX, currY, halfLineWidth, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.closePath()
+                ctx.beginPath();
+                ctx.lineTo(currX, currY);
+            }
+
+            function clearCanvas() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            }
+
+            // AJAX stuff
+            // https://stackoverflow.com/a/35203184
+            $("#classify-button").click(
+                classify
+            );
+
+            function classify() {
+                $("#classification").text("Classification: (loading)");
+
+                var canvasSize = 250;
+
+                // load canvas data
+                var rawCanvasData = ctx.getImageData(0, 0, canvasSize, canvasSize)
+                var pixelArr = rawCanvasData.data;
+
+                // compress canvas data (taking advantage of it being black and white)
+                // instead of having [w, w, w, w, b, b, w, w, w], use the form [4, 2, 3]
+                // as in: 4 white followed by 2 black followed by 3 white pixels
+
+                // threshold for deciding if a pixel is white/black
+                var threshold = 200;
+                var pixelArrCounts = []
+                var on = true;
+                if (pixelArr[0] <= threshold) {
+                    pixelArrCounts.push(0)
+                    on = false;
+                }
+                var count = 0;
+
+                // canvas data has 4 components (RGBA) per pixel, so take steps of 4 (data is black and white)
+                for (var i = 3; i < pixelArr.length; i += 4) {
+                    count++;
+
+                    if ((pixelArr[i] > threshold) != on) {
+                        // change in pixel colour from the prevoius one, record count
                         pixelArrCounts.push(count);
+                        on = !on;
+                        count = 0;
                     }
+                }
 
-                    var compressedData = {
-                        width: rawCanvasData.width,
-                        height: rawCanvasData.height,
-                        pixelData: pixelArrCounts
+                if(count > 0) {
+                    pixelArrCounts.push(count);
+                }
+
+                var compressedData = {
+                    width: rawCanvasData.width,
+                    height: rawCanvasData.height,
+                    pixelData: pixelArrCounts
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/classify",
+                    data: compressedData,
+                    success: function(result) {
+                        $("#classification").text("Classification: " + result);
+                    },
+                    error: function(result) {
+                        alert('HTTP error');
                     }
-
-                    $.ajax({
-                        type: "POST",
-                        url: "/classify",
-                        data: compressedData,
-                        success: function(result) {
-                            $("#classification").text("Classification: " + result);
-                        },
-                        error: function(result) {
-                            alert('HTTP error');
-                        }
-                    });
                 });
+            }
         </script>
     </body>
 </html>

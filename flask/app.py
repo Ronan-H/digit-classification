@@ -26,12 +26,12 @@ def classify():
     """
 
     img_size = int(request.values.get("width"))
-    pixel_data = request.form.getlist("pixelData[]")
+    image_data = request.form.getlist("pixelData[]")
 
     # convert post data to PIL Image
-    canvas_img = image_ops.post_data_to_image(pixel_data, img_size)
+    canvas_img = image_ops.post_data_to_image(image_data, img_size)
     # crop, resize, and translate the drawn digit to match the MNIST data set as closely as possible
-    mnistified_img = image_ops.mnistify_image(canvas_img)
+    mnistified_img = image_ops.mnistify_image(canvas_img, save_stages=False)
     # convert the image to a form that the model accepts as input
     model_input = image_ops.image_to_model_input(mnistified_img)
 
