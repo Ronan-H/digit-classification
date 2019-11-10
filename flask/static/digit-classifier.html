@@ -21,10 +21,10 @@
             // adapted from https://stackoverflow.com/a/8398189
             var canvas, ctx;
             var drawing = false;
-            var prevX = 0,
-                currX = 0,
-                prevY = 0,
+            var currX = 0,
                 currY = 0;
+            var prevX = 0,
+                prevY = 0;
             var strokeStyle = "black",
                 lineWidth = 19,
                 halfLineWidth = lineWidth / 2;
@@ -54,14 +54,13 @@
                 }
 
                 function onMouseEvent(res, e) {
+                    currX = e.clientX - canvas.offsetLeft;
+                    currY = e.clientY - canvas.offsetTop;
+
                     switch (res) {
                         case "down":
                             drawing = true;
                             ctx.moveTo(currX, currY);
-
-                            currX = e.clientX - canvas.offsetLeft;
-                            currY = e.clientY - canvas.offsetTop;
-
                             fillCircle();
                             break;
                         case "up":
@@ -71,10 +70,6 @@
                             break;
                         case "move":
                             if (drawing) {
-                                prevX = currX;
-                                prevY = currY;
-                                currX = e.clientX - canvas.offsetLeft;
-                                currY = e.clientY - canvas.offsetTop;
                                 connectLine();
                             }
                             break;
@@ -84,6 +79,7 @@
                 function connectLine() {
                     ctx.lineTo(currX, currY);
                     ctx.stroke();
+                    fillCircle();
                 }
 
                 function fillCircle() {
