@@ -4,6 +4,7 @@ import json
 import numpy as np
 import keras
 from PIL import Image
+from PIL import ImageOps
 app = Flask(__name__)
 
 
@@ -16,16 +17,39 @@ def load_model():
 model = load_model()
 
 
-def scale_and_center(img, scaled_size):
-    scaled = img.resize([scaled_size, scaled_size], Image.NEAREST)
+def scale_and_center(img, img_size, scaled_size):
+    immat = img.load()
+    crop_left = img_size
+    crop_right = 0
+    crop_up = img_size
+    crop_down = 0
+    for x in range(img_size):
+        for y in range(img_size):
+            if immat[(x, y)] != 0:
+                crop_left = min(x, crop_left)
+                crop_right = max(x, crop_right)
+                crop_up = min(y, crop_up)
+                crop_down = max(y, crop_down)
+
+    cropped = img.crop((crop_left, crop_up, crop_right + 1, crop_down + 1))
+    cropped.save("cropped.png")
+    if cropped.size[0] > cropped.size[1]:
+        expand_amount = (cropped.size[0] - cropped.size[1]) // 2
+        cropped = ImageOps.expand(cropped, border=(0, expand_amount, 0, expand_amount))
+    else:
+        expand_amount = (cropped.size[1] - cropped.size[0]) // 2
+        cropped = ImageOps.expand(cropped, border=(expand_amount, 0, expand_amount, 0))
+
+    scaled = cropped.resize([20, 20], Image.NEAREST)
+    cropped.save("resized-20.png")
+    scaled = ImageOps.expand(scaled, border=4)
 
     # https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
     immat = scaled.load()
-    (X, Y) = scaled.size
-    m = np.zeros((X, Y))
+    m = np.zeros((scaled_size, scaled_size))
 
-    for x in range(X):
-        for y in range(Y):
+    for x in range(scaled_size):
+        for y in range(scaled_size):
             m[x, y] = immat[(x, y)] != 0
 
     s = np.sum(np.sum(m))
@@ -41,8 +65,8 @@ def scale_and_center(img, scaled_size):
     dy = np.sum(m, 0)
 
     # expected values
-    cx = np.sum(dx * np.arange(X))
-    cy = np.sum(dy * np.arange(Y))
+    cx = np.sum(dx * np.arange(scaled_size))
+    cy = np.sum(dy * np.arange(scaled_size))
 
     middle = scaled_size / 2
     offset_x = cx - middle
@@ -57,7 +81,6 @@ def scale_and_center(img, scaled_size):
     f = round(offset_y)  # up/down (i.e. 5/-5)
     translated = scaled.transform(scaled.size, Image.AFFINE, (a, b, c, d, e, f))
 
-    print("CoM: ", cx, cy)
     return translated
 
 
@@ -70,15 +93,14 @@ def hello():
 def classify():
     scaled_size = 28
 
-    img_width = int(request.values.get("width"))
-    img_height = int(request.values.get("width"))
+    img_size = int(request.values.get("width"))
     pixel_data = request.form.getlist("pixelData[]")
     # convert boolean array to values from 0-255
     pixel_nums = np.array([255 if v == "true" else 0 for v in pixel_data], dtype=np.uint8)
-    model_input = pixel_nums.reshape((img_width, img_height))
+    model_input = pixel_nums.reshape((img_size, img_size))
     # image = Image.fromarray(model_input).resize([28, 28], Image.NEAREST)
     image = Image.fromarray(model_input)
-    image = scale_and_center(image, scaled_size)
+    image = scale_and_center(image, img_size, scaled_size)
     model_input = np.array(image).reshape((1, scaled_size, scaled_size, 1))
     image.save("test_image.png")
     model_output = model.predict_classes(model_input)
