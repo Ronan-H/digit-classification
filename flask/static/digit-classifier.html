@@ -11,7 +11,7 @@
     </head>
 
     <body onload="init()">
-        <div class="container" class="mr-3">
+        <div class="container mt-3">
             <div class="row">
                 <div class="col-md-9">
                     <h2>Digit classifier</h2>
@@ -101,6 +101,10 @@
                         fillCircle();
                         classify();
                     case "out":
+                        if (drawing) {
+                            classify();
+                        }
+
                         drawing = false;
                         break;
                     case "move":
