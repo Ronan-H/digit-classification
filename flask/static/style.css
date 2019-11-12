@@ -1,4 +1,9 @@
 
 #digit-canvas {
     border: 2px solid black;
+    border-radius: 4px;
+}
+
+#classification {
+    font-size: 7em;
 }
