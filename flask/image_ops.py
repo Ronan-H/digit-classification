@@ -119,15 +119,10 @@ def post_data_to_image(image_data, img_size):
     nibbles[1::2] = right_nibbles
 
     # decode nibbles back into the run-length encoding number array
-    rle_nums = []
-    next_num = ""
-
-    for nibble in nibbles:
-        if nibble == 0:
-            rle_nums.append(next_num)
-            next_num = ""
-        else:
-            next_num += str(nibble - 1)
+    # start by making a list of the indexes of the commas in the array
+    comma_indexes = [-1] + [i for i, v in enumerate(nibbles) if v == 0] + [len(nibbles)]
+    # split nibble array by comma to get a list of run length encoding numbers
+    rle_nums = ["".join(chr(44 if b == 0 else b + 47) for b in nibbles[comma_indexes[i] + 1:comma_indexes[i + 1]]) for i in range(len(comma_indexes) - 1)]
 
     # decode run length encoding back into the drawn digit (canvas data)
     pixel_nums = np.zeros(img_size * img_size, dtype=np.uint8)
@@ -147,7 +142,7 @@ def post_data_to_image(image_data, img_size):
     return Image.fromarray(reshaped)
 
 
-def mnistify_image(img, save_stages=True):
+def mnistify_image(img, save_stages=False):
     """
     Converts the canvas image into an image that resembles a digit from the MNIST
     data set as closely as possible. This is broken down into 4 steps:

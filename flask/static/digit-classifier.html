@@ -215,7 +215,7 @@
                 if (jsonArr.length % 2 == 1) {
                     // odd number of characters, need the extra byte
                     // (since integer division is floored)
-                    len++;
+                    len += 2;
                 }
 
                 // create byte buffer
@@ -234,7 +234,14 @@
                         nextByte = (jsonArr.charCodeAt(i) - 48 + 1) << 4;
                     }
 
-                    if (jsonArr.charAt(i + 1) != ",") {
+                    if (i == jsonArr.length - 2) {
+                        // last character, must pad right bits with a comma and add in
+                        // two redundant zeroes as the next byte
+                        buffer[bufferCounter] = nextByte;
+                        buffer[bufferCounter + 1] = (1 << 4) | 1;
+                        break;
+                    }
+                    else if (jsonArr.charAt(i + 1) != ",") {
                         // use a bitwise OR to add this number's encoding to the
                         // rightmost 4 bits of the byte
                         nextByte = nextByte | (jsonArr.charCodeAt(i + 1) - 48 + 1);
@@ -246,13 +253,15 @@
                 return buffer;
             }
 
-            // taken directly from https://gist.github.com/jonleighton/958841
+            // taken from https://gist.github.com/jonleighton/958841
             // converts an ArrayBuffer of bytes into Base64
             function base64ArrayBuffer(arrayBuffer) {
                 var base64    = ''
                 var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-                var bytes         = new Uint8Array(arrayBuffer)
+                // may as well not create a new buffer for this, since I don't need the buffer afterwards
+                // var bytes         = new Uint8Array(arrayBuffer)
+                var bytes         = arrayBuffer
                 var byteLength    = bytes.byteLength
                 var byteRemainder = byteLength % 3
                 var mainLength    = byteLength - byteRemainder
