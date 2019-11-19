@@ -26,7 +26,7 @@ def classify():
     """
 
     img_size = int(request.values.get("size"))
-    image_data = request.form.getlist("pixelData[]")
+    image_data = request.values.get("pixelData")
 
     # convert post data to PIL Image
     canvas_img = image_ops.post_data_to_image(image_data, img_size)

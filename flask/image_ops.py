@@ -3,7 +3,7 @@ from flask import request
 import numpy as np
 from PIL import Image
 from PIL import ImageOps
-
+import base64
 
 def crop_to_digit(img):
     """
@@ -106,12 +106,35 @@ def post_data_to_image(image_data, img_size):
     Converts data from the post form into a PIL Image
     """
 
-    # decompress image data
+    # decode base64 data as bytes
+    rle_bytes = np.frombuffer(base64.b64decode(image_data), dtype=np.uint8)
+    # separate bytes out into nibble arrays
+    # (a nibble is 4 bits, or half a byte)
+    right_nibbles = rle_bytes & 0xf
+    left_nibbles = (rle_bytes >> 4) & 0xf
+    # join those two arrays to get an array of nibbles
+    # with some help from https://stackoverflow.com/a/5347492
+    nibbles = np.zeros(rle_bytes.size * 2, dtype=np.uint8)
+    nibbles[0::2] = left_nibbles
+    nibbles[1::2] = right_nibbles
+
+    # decode nibbles back into the run-length encoding number array
+    rle_nums = []
+    next_num = ""
+
+    for nibble in nibbles:
+        if nibble == 0:
+            rle_nums.append(next_num)
+            next_num = ""
+        else:
+            next_num += str(nibble - 1)
+
+    # decode run length encoding back into the drawn digit (canvas data)
     pixel_nums = np.zeros(img_size * img_size, dtype=np.uint8)
     pixel_value = 0
     index = 0
 
-    for i, length in enumerate(image_data):
+    for i, length in enumerate(rle_nums):
         for j in range(int(length)):
             pixel_nums[index] = pixel_value
             index += 1
@@ -124,7 +147,7 @@ def post_data_to_image(image_data, img_size):
     return Image.fromarray(reshaped)
 
 
-def mnistify_image(img, save_stages=False):
+def mnistify_image(img, save_stages=True):
     """
     Converts the canvas image into an image that resembles a digit from the MNIST
     data set as closely as possible. This is broken down into 4 steps:
