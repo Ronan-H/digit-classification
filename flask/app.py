@@ -25,7 +25,7 @@ def classify():
     :return: Digit classification (0-9)
     """
 
-    img_size = int(request.values.get("width"))
+    img_size = int(request.values.get("size"))
     image_data = request.form.getlist("pixelData[]")
 
     # convert post data to PIL Image

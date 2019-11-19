@@ -139,31 +139,49 @@
                 var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height)
                 var pixelArr = rawCanvasData.data;
 
-                // compress canvas data (taking advantage of it being black and white)
-                // instead of having [w, w, w, w, b, b, w, w, w], use the form [4, 2, 3]
-                // as in: 4 white followed by 2 black followed by 3 white pixels
+                // encode pixel data using run-length encoding
+                encodedPixels = toRunLengthEncoding(pixelArr);
 
-                // threshold for deciding if a pixel is white/black
-                var threshold = 200;
-                var pixelArrCounts = []
-                var onWhite = true;
-                if (pixelArr[0] <= threshold) {
-                    // starting on a white pixel
-                    // starting with "0 white pixles" just flips to black
-                    pixelArrCounts.push(0)
-                    onWhite = false;
+                // put together an object representing the encoded canvas data
+                var encodedCanvas = {
+                    // assuming the canvas dimensions will always be square
+                    size: rawCanvasData.width,
+                    pixelData: encodedPixels
                 }
 
-                // count of white/black pixels in a row
+                // make an AJAX POST request, sending up the canvas data
+                // the resulting classification will be displayed to the user as text
+                $.post("/classify", encodedCanvas).done(function(result) {
+                    $("#classification").text(result);
+                });
+            }
+
+            function toRunLengthEncoding(pixelArr) {
+                // compress pixel data (taking advantage of it only having two values, black or transparent)
+                // ie. instead of having [0, 0, 0, 0, 1, 1, 0, 0, 0], use the form [4, 2, 3]
+                // as in: 4 transparent pixels followed by 2 black pixels followed by 3 white pixels
+                // more info on the run-length encoding: https://en.wikipedia.org/wiki/Run-length_encoding
+
+                var pixelArrCounts = []
+                var onBlack = false;
+                if (pixelArr[3] > 0) {
+                    // starting on a transparent pixel
+                    // (starting with "0 transparent pixels" just flips to black)
+                    pixelArrCounts.push(0)
+                    onBlack = true;
+                }
+
+                // count of black/transparent pixels in a row
                 var count = 0;
-                // canvas data has 4 components (RGBA) per pixel, so take steps of 4 (data is black and white)
+                // canvas data has 4 components (RGBA) per pixel, so take steps of 4
+                // to read only alpha values (check: transparent or not transparent pixel)
                 for (var i = 3; i < pixelArr.length; i += 4) {
                     count++;
 
-                    if ((pixelArr[i] > threshold) != onWhite) {
+                    if ((pixelArr[i] > 0) != onBlack) {
                         // change in pixel colour from the prevoius one, record count and flip to white/black
                         pixelArrCounts.push(count);
-                        onWhite = !onWhite;
+                        onBlack = !onBlack;
                         count = 0;
                     }
                 }
@@ -173,18 +191,7 @@
                     pixelArrCounts.push(count);
                 }
 
-                // put together an object representing the canvas data in a compressed format
-                var compressedData = {
-                    width: rawCanvasData.width,
-                    height: rawCanvasData.height,
-                    pixelData: pixelArrCounts
-                }
-
-                // make an AJAX POST request, sending up the canvas data
-                // the resulting classification will be displayed to the user as text
-                $.post("/classify", compressedData).done(function(result) {
-                    $("#classification").text(result);
-                });
+                return pixelArrCounts;
             }
         </script>
 

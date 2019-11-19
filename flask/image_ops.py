@@ -108,7 +108,7 @@ def post_data_to_image(image_data, img_size):
 
     # decompress image data
     pixel_nums = np.zeros(img_size * img_size, dtype=np.uint8)
-    pixel_value = 255
+    pixel_value = 0
     index = 0
 
     for i, length in enumerate(image_data):
