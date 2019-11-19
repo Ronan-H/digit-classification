@@ -72,6 +72,7 @@
                 ctx.fillStyle = drawColour;
                 ctx.strokeStyle = drawColour;
                 ctx.lineWidth = lineWidth;
+                ctx.lineCap = "round";
 
                 // register mouse event listeners
                 canvas.addEventListener("mousedown", function (e) {
@@ -98,45 +99,31 @@
                         // start drawing
                         drawing = true;
                         ctx.moveTo(currX, currY);
-                        fillCircle();
+                        draw();
                         break;
                     case "mouseup":
-                        drawing = false;
-                        fillCircle();
-                        // automatically classify canvas on mouse up
-                        classify();
+                    case "mouseout":
+                        if (drawing) {
+                            drawing = false;
+                            // automatically classify canvas on mouse out/up
+                            classify();
+                        }
                         break;
                     case "mousemove":
                         if (drawing) {
                             // draw a line from where the mouse was to where it is now
-                            connectLine();
+                            draw();
                         }
-                        break;
-                    case "mouseout":
-                        if (drawing) {
-                            // automatically classify canvas on mouse out
-                            classify();
-                        }
-                        drawing = false;
                         break;
                 }
             }
 
-            function connectLine() {
-                // connect a line between where the mouse was and where the mouse currently is
+            function draw() {
+                // connect a rounded line between where the mouse was and where the mouse currently is
                 ctx.lineTo(currX, currY);
                 ctx.stroke();
-                fillCircle();
-            }
-
-            function fillCircle() {
-                // fill a circle at the location of the mouse
                 ctx.beginPath();
-                ctx.arc(currX, currY, lineWidth / 2, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.closePath()
-                ctx.beginPath();
-                ctx.lineTo(currX, currY);
+                ctx.moveTo(currX, currY);
             }
 
             function clearCanvas() {
