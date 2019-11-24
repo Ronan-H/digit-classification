@@ -52,7 +52,7 @@ def scale_to_mnist(img):
     """
     Shrinks an image down to MNIST scale (20x20) and adds padding up to 28x28
     """
-    scaled = img.resize([20, 20], Image.ANTIALIAS)
+    scaled = img.resize([20, 20], Image.BICUBIC)
     return ImageOps.expand(scaled, border=4)
 
 

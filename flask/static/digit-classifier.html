@@ -107,9 +107,12 @@
                     case "mousedown":
                         // start drawing
                         if (!hasDrawn) {
+                            // start a new list of drawing points
                             drawPoints = [];
                         }
                         else {
+                            // user is continuing on their drawing, make sure this point
+                            // doesn't get drawn connected to the previous point
                             drawPoints.push("up");
                         }
 
@@ -124,6 +127,7 @@
                         if (drawing) {
                             drawing = false;
 
+                            // resize line width based on how big the digit the user drew was
                             autoResizeLineWidth();
 
                             // automatically classify canvas on mouse out/up
@@ -159,6 +163,8 @@
             }
 
             function recreateDrawing() {
+                // redraw user draw digit on canvas from list of recorded points
+
                 if (drawPoints.length == 0) return;
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -167,6 +173,7 @@
                 for (var i = 0; i < drawPoints.length; i++) {
                     var drawPoint = drawPoints[i];
                     if (drawPoint == "up") {
+                        // user stopped drawing this line before continuing drawing, move to next point
                         i++;
                         ctx.moveTo(drawPoints[i][0], drawPoints[i][1]);
                     }
@@ -177,8 +184,10 @@
             }
 
             function autoResizeLineWidth() {
+                // automatically resize line width based on the size of the image the user drew
                 var canvasSize = 200;
 
+                // find the bounding box around what the user drew
                 var left = canvasSize;
                 var right = 0;
                 var top = canvasSize;
@@ -198,10 +207,16 @@
                     }
                 }
 
-                var lineWidthFraction = 0.13;
-                var newLineWith = ((right - left) * lineWidthFraction + (bottom - top) * lineWidthFraction) / 2;
+                // compute new line width
+                // (0.11 * width or height, whichever was longer, with a minimum of 1 and maximum of 15)
+                var lineWidthFraction = 0.11;
+                var newLineWith = Math.ceil(Math.max(right - left, bottom - top) * lineWidthFraction);
+                newLineWidth = Math.min(newLineWith, 15);
+                newLineWidth = Math.max(newLineWith, 1);
 
                 ctx.lineWidth = newLineWith;
+
+                // redraw digit with new line width
                 recreateDrawing();
             }
 
