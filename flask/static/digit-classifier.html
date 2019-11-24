@@ -120,6 +120,11 @@
             }
 
             function onMouseEvent(action, e) {
+                if (isMobile) {
+                    // prevent back/forward swipes etc. in the browser on mobile devices
+                    e.preventDefault();
+                }
+
                 switch (action) {
                     case "mousedown":
                     case "touchstart":
