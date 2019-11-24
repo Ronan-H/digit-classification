@@ -66,4 +66,14 @@ Doing this produces images that are more or less indistinguishable from digits f
 
 The easiest way to send the canvas data up to the web server is to use *canvas.toDataURL()*, producing a PNG encoded image, sent up as Base64 text. I decided to make my own encoding, taking advantage of the fact that the canvas pixels are always either transparent, or black (appearing to the user as white or black). 
 
-The first encoding goes through the image pixel by pixel, counting up how many white/black pixels there are in a row. Once the value changes from black to white or white to black, this value is recorded in an array. I later found out that this is called a [Run-length encoding](https://en.wikipedia.org/wiki/Run-length_encoding).
+The first encoding goes through the image pixel by pixel, counting up how many white/black pixels there are in a row. Once the value changes from black to white or white to black, this value is recorded in an array. Doing this gives you an array that looks something like [183, 5, 3, 3, 50, 6, ...], meaning 183 white pixels followed by 5 black pixels followed by 3 white pixels... etc. I later found out that this is called a [Run-length encoding](https://en.wikipedia.org/wiki/Run-length_encoding). This in itself is a huge improvement on PNG.
+
+The next encoding is a lot more pedantic. We now have an array of numbers, being represented in presumably UTF-8 or something similar. At best, that means that when this array is converted to text for the post request, each character will be represented using one byte. However, we're only using the values 0-9 and a comma (the brackets are redundant). That's 11 values, which can be reperesented using only 4 bits (since 2^4 = 16). Conveniently, this is half a byte, so we can represent two characters from this number array in a single byte. So to use this sort of encoding, I had to make use of bitwise operations to encode/decode characters. These bytes are then converted to Base64 so they can be sent in the POST request payload.
+
+Here are the results (in terms of space efficiency) after drawing the number 3 as a test:
+
+**PNG (baseline)**: 2634 Base64 characters
+**Run-length encoding**: 904 text characters
+**Further encoding (2 chars per byte)**: 604 Base64 characters
+
+So, these two encodings, when used dotgether, produce a Base64 string which is 4-5 times smaller than PNG, depending on what was drawn. Of course, there may be some overhead in terms of speed (since the image has to be encoded on the client side in Javascript, and then decoded on the server in Python), but the classifications became noticably quicker after implementing these, and PNG encoding/decoding isn't free either.
