@@ -61,3 +61,9 @@ Users draw a digit on a large (eg. 200x200) canvas, and the model classifies 28x
 4. Center digit within image based on Center of Mass
 
 Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
+
+# Canvas image encoding
+
+The easiest way to send the canvas data up to the web server is to use *canvas.toDataURL()*, producing a PNG encoded image, sent up as Base64 text. I decided to make my own encoding, taking advantage of the fact that the canvas pixels are always either transparent, or black (appearing to the user as white or black). 
+
+The first encoding goes through the image pixel by pixel, counting up how many white/black pixels there are in a row. Once the value changes from black to white or white to black, this value is recorded in an array. I later found out that this is called a [Run-length encoding](https://en.wikipedia.org/wiki/Run-length_encoding).
