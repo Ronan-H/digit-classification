@@ -70,6 +70,8 @@
             // drawing colour and line width
             var drawColour = "black",
                 lineWidth = 15;
+
+            var drawPoints = [];
             
             function init() {
                 // initialise canvas
@@ -106,11 +108,17 @@
                         drawing = true;
                         ctx.moveTo(currX, currY);
                         draw();
+
+                        drawPoints = [];
+                        drawPoints.push([currX, currY]);
                         break;
                     case "mouseup":
                     case "mouseout":
                         if (drawing) {
                             drawing = false;
+
+                            autoResizeLineWidth();
+
                             // automatically classify canvas on mouse out/up
                             classify();
                         }
@@ -119,6 +127,8 @@
                         if (drawing) {
                             // draw a line from where the mouse was to where it is now
                             draw();
+
+                            drawPoints.push([currX, currY]);
                         }
                         break;
                 }
@@ -132,11 +142,59 @@
                 ctx.moveTo(currX, currY);
             }
 
+            function drawPoint(point) {
+                // connect a rounded line between where the mouse was and where the mouse currently is
+                ctx.lineTo(point[0], point[1]);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(point[0], point[1]);
+            }
+
             function clearCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // clear classification
                 $("#classification").text("");
                 $("#classify-time").text("");
+            }
+
+            function recreateDrawing() {
+                if (drawPoints.length == 0) return;
+
+                clearCanvas();
+                ctx.moveTo(drawPoints[0][0], drawPoints[0][1]);
+
+                for (var i = 0; i < drawPoints.length; i++) {
+                    drawPoint(drawPoints[i]);
+                }
+            }
+
+            function autoResizeLineWidth() {
+                var canvasSize = 200;
+
+                var left = canvasSize;
+                var right = 0;
+                var top = canvasSize;
+                var bottom = 0;
+
+                var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                for (var i = 3; i < rawCanvasData.length; i += 4) {
+                    if (rawCanvasData[i] > 0) {
+                        var index = (i - 3) / 4;
+                        var x = index % canvasSize;
+                        var y = index / canvasSize;
+
+                        left = Math.min(x, left);
+                        right = Math.max(x, right);
+                        top = Math.min(y, top);
+                        bottom = Math.max(y, bottom);
+                    }
+                }
+
+                var lineWidthFraction = 0.13;
+                var newLineWith = ((right - left) * lineWidthFraction + (bottom - top) * lineWidthFraction) / 2;
+
+                ctx.lineWidth = newLineWith;
+                recreateDrawing();
             }
 
             // AJAX stuff
@@ -145,7 +203,7 @@
                 var classifyStart = new Date().getTime();
 
                 // load canvas data
-                var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 var pixelArr = rawCanvasData.data;
 
                 // encode pixel data using run-length encoding
