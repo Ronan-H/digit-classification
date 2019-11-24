@@ -40,11 +40,11 @@ Run **jupyter lab** from the *flask* directory.
 
 From here you can edit and re-run the notebook (which will also output a new **model.h5** file)
 
-# How the model works
+## How the model works
 
 You can read the [Jupyter Nobtebook](https://github.com/Ronan-H/digit-classification/blob/master/model/model.ipynb) to see how the model works, which has code separated out into cells, with some markdown inbetween explaining what each part does.
 
-# "MNISTifying" user drawn digits
+## "MNISTifying" user drawn digits
 
 Users draw a digit on a large (eg. 200x200) canvas, and the model classifies 28x28 digits, so the image has to be at least be resized before being fed into the model. But if we copy the way the digits were resized in the MNIST dataset...
 
@@ -62,7 +62,12 @@ Users draw a digit on a large (eg. 200x200) canvas, and the model classifies 28x
 
 Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
 
-# Canvas image encoding
+
+## Adaptive canvas brush stroke size
+
+Another thing I did to make predictions even better is make the canvas brush size on the client grow/shrink after the user has drawn a digit, based on the size of the digit they drew. In other words, if you draw a really small digit, the brush size will shrink, so when it later gets MNISTified (see above), the brush size won't look too thick. This becomes a problem when you try to draw a small 8 for example, where the two holes wouldn't have been visible because the stroke size is too big.
+
+## Canvas image encoding
 
 The easiest way to send the canvas data up to the web server is to use *canvas.toDataURL()*, producing a PNG encoded image, sent up as Base64 text. I decided to make my own encoding, taking advantage of the fact that the canvas pixels are always either transparent, or black (appearing to the user as white or black). 
 
@@ -73,7 +78,9 @@ The next encoding is a lot more pedantic. We now have an array of numbers, being
 Here are the results (in terms of space efficiency) after drawing the number 3 as a test:
 
 **PNG (baseline)**: 2634 Base64 characters
+
 **Run-length encoding**: 904 text characters
+
 **Further encoding (2 chars per byte)**: 604 Base64 characters
 
 So, these two encodings, when used dotgether, produce a Base64 string which is 4-5 times smaller than PNG, depending on what was drawn. Of course, there may be some overhead in terms of speed (since the image has to be encoded on the client side in Javascript, and then decoded on the server in Python), but the classifications became noticably quicker after implementing these, and PNG encoding/decoding isn't free either.
