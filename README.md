@@ -55,13 +55,27 @@ Users draw a digit on a large (eg. 200x200) canvas, and the model classifies 28x
 
 ...the predictions should be much more accurate, so that's what I did. I broke this down into 4 steps:
 
+Start with the user drawn image:
+
+<div align="center"><img src="./readme-resources/mnistify-example/0-canvas-img.png" alt="User drawn image" width="15%" align="center"></div>
+
 1. Crop image to fit digit (with no border)
+
+<div align="center"><img src="./readme-resources/mnistify-example/1-cropped.png" alt="Cropped digit" width="15%" align="center"></div>
+
 2. Extend image out into a square (width, height become whichever is bigger)
+
+<div align="center"><img src="./readme-resources/mnistify-example/2-squared.png" alt="Cropped digit" width="15%" align="center"></div>
+
 3. Scale the image down to 20x20, and expand edges out to 28x28 (image gets aliased while doing this)
+
+<div align="center"><img src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="15%" align="center"></div>
+
 4. Center digit within image based on Center of Mass
 
-Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
+<div align="center"><img src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="15%" align="center"></div>
 
+Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
 
 ## Adaptive canvas brush stroke size
 
