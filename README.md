@@ -39,3 +39,25 @@ Draw a digit on the canvas using your mouse. When you release left click, the di
 Run **jupyter lab** from the *flask* directory.
 
 From here you can edit and re-run the notebook (which will also output a new **model.h5** file)
+
+# How the model works
+
+You can read the [Jupyter Nobtebook](https://github.com/Ronan-H/digit-classification/blob/master/model/model.ipynb) to see how the model works, which has code separated out into cells, with some markdown inbetween explaining what each part does.
+
+# "MNISTifying" user drawn digits
+
+Users draw a digit on a large (eg. 200x200) canvas, and the model classifies 28x28 digits, so the image has to be at least be resized before being fed into the model. But if we copy the way the digits were resized in the MNIST dataset...
+
+
+> The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.
+
+> (from http://yann.lecun.com/exdb/mnist/)
+
+...the predictions should be much more accurate, so that's what I did. I broke this down into 4 steps:
+
+1. Crop image to fit digit (with no border)
+2. Extend image out into a square (width, height become whichever is bigger)
+3. Scale the image down to 20x20, and expand edges out to 28x28 (image gets aliased while doing this)
+4. Center digit within image based on Center of Mass
+
+Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
