@@ -1,5 +1,7 @@
 # Digit Classification
 
+<div align="center"><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></div>
+
 This is my 4th year *emerging technologies* assignment. There are two main parts: a [Jupyter Notebook](https://jupyter.org/) which trains a neural network on the [MNIST dataset of handwritten digits](http://yann.lecun.com/exdb/mnist/) step by step using [Keras](https://keras.io/), in order to later classify digits drawn by a user using a simple web application written using [Flask](https://www.fullstackpython.com/flask.html).
 
 ## Notable files in this repo
