@@ -51,6 +51,12 @@
                     <h2 id="classification"></h2>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-9">
+                    <h5 id="classify-time" class="font-italic"></h2>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -130,11 +136,14 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // clear classification
                 $("#classification").text("");
+                $("#classify-time").text("");
             }
 
             // AJAX stuff
             // https://stackoverflow.com/a/35203184
             function classify() {
+                var classifyStart = new Date().getTime();
+
                 // load canvas data
                 var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height)
                 var pixelArr = rawCanvasData.data;
@@ -160,7 +169,10 @@
                 // make an AJAX POST request, sending up the canvas data
                 // the resulting classification will be displayed to the user as text
                 $.post("/classify", encodedCanvas).done(function(result) {
+                    var timeTaken = new Date().getTime() - classifyStart;
+
                     $("#classification").text(result);
+                    $("#classify-time").text("Classified in " + timeTaken + " ms.");
                 });
             }
 
