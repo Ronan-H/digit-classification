@@ -34,7 +34,7 @@
 
             <div class="row">
                 <div class="col-md-9">
-                    <button id="clear-button" type="button" onclick="clearCanvas()" class="btn btn-primary">Clear</button>
+                    <button id="clear-button" type="button" onclick="reset()" class="btn btn-primary">Clear</button>
                 </div>
             </div>
 
@@ -64,6 +64,7 @@
             var canvas, ctx;
             // user currently drawing (mouse is down and inside the canvas)
             var drawing = false;
+            var hasDrawn = false;
             // current mouse position
             var currX = 0,
                 currY = 0;
@@ -105,11 +106,17 @@
                 switch (action) {
                     case "mousedown":
                         // start drawing
-                        drawing = true;
-                        ctx.moveTo(currX, currY);
-                        draw();
+                        if (!hasDrawn) {
+                            drawPoints = [];
+                        }
+                        else {
+                            drawPoints.push("up");
+                        }
 
-                        drawPoints = [];
+                        drawing = hasDrawn = true;
+                        ctx.moveTo(currX, currY);
+                        lineToPoint(currX, currY);
+
                         drawPoints.push([currX, currY]);
                         break;
                     case "mouseup":
@@ -126,7 +133,7 @@
                     case "mousemove":
                         if (drawing) {
                             // draw a line from where the mouse was to where it is now
-                            draw();
+                            lineToPoint(currX, currY);
 
                             drawPoints.push([currX, currY]);
                         }
@@ -134,37 +141,38 @@
                 }
             }
 
-            function draw() {
+            function lineToPoint(x, y) {
                 // connect a rounded line between where the mouse was and where the mouse currently is
-                ctx.lineTo(currX, currY);
+                ctx.lineTo(x, y);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(currX, currY);
+                ctx.moveTo(x, y);
             }
 
-            function drawPoint(point) {
-                // connect a rounded line between where the mouse was and where the mouse currently is
-                ctx.lineTo(point[0], point[1]);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(point[0], point[1]);
-            }
-
-            function clearCanvas() {
+            function reset() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // clear classification
                 $("#classification").text("");
                 $("#classify-time").text("");
+
+                drawing = hasDrawn = false;
             }
 
             function recreateDrawing() {
                 if (drawPoints.length == 0) return;
 
-                clearCanvas();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.moveTo(drawPoints[0][0], drawPoints[0][1]);
 
                 for (var i = 0; i < drawPoints.length; i++) {
-                    drawPoint(drawPoints[i]);
+                    var drawPoint = drawPoints[i];
+                    if (drawPoint == "up") {
+                        i++;
+                        ctx.moveTo(drawPoints[i][0], drawPoints[i][1]);
+                    }
+                    else {
+                        lineToPoint(drawPoint[0], drawPoint[1]);
+                    }
                 }
             }
 
