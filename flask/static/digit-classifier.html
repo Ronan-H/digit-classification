@@ -15,45 +15,47 @@
     <body onload="init()">
         <div class="container mt-3">
             <div class="row">
-                <div class="col-md-9">
-                    <h2>Digit classifier</h2>
+                <div class="col-md-6 mx-auto">
+                    <h2 class="text-center">Digit classifier</h2>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-9">
-                    <h4>Draw a digit below to see how the neural network classifies it</h4>
+                <div class="col-md-6 mx-auto">
+                    <h4 class="text-center">Draw a digit below to see how the neural network classifies it</h4>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-6 mx-auto">
                     <canvas id="digit-canvas" width="200" height="200"></canvas>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-9">
-                    <button id="clear-button" type="button" onclick="reset()" class="btn btn-primary">Clear</button>
+                <div class="col-md-6 mx-auto mt-2">
+                    <div class="text-center">
+                        <button id="clear-button" type="button" onclick="reset()" class="btn btn-primary">Clear</button>
+                    </div>
                 </div>
             </div>
 
             <br />
 
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-6 mx-auto text-center">
                     <h4>Classification:</h2>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-6 mx-auto text-center">
                     <h2 id="classification"></h2>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-6 mx-auto text-center">
                     <h5 id="classify-time" class="font-italic"></h2>
                 </div>
             </div>
