@@ -1,7 +1,7 @@
 
 #digit-canvas {
     border: 2px solid black;
-    border-radius: 4px;
+    border-radius: 5px;
     /* slightly tinted background colour to distinguish the canvas
        from the rest of the page */
     background-color: #f9f9ff;

@@ -5,6 +5,7 @@ from PIL import Image
 from PIL import ImageOps
 import base64
 
+
 def crop_to_digit(img):
     """
     Crop image to the exact size of the drawn digit
@@ -91,6 +92,7 @@ def center_digit(img):
     offset_y = cy - middle
 
     # https://stackoverflow.com/questions/37584977/translate-image-using-pil
+    # translate digit so that it's center of mass is in the center of the image
     a = 1
     b = 0
     c = round(offset_x)  # left/right (i.e. 5/-5)
@@ -122,6 +124,8 @@ def post_data_to_image(image_data, img_size):
     # start by making a list of the indexes of the commas in the array
     comma_indexes = [-1] + [i for i, v in enumerate(nibbles) if v == 0] + [len(nibbles)]
     # split nibble array by comma to get a list of run length encoding numbers
+    # (long and complicated list comprehension, but should be very efficient,
+    #  see https://waymoot.org/home/python_string/)
     rle_nums = ["".join(chr(44 if b == 0 else b + 47) for b in nibbles[comma_indexes[i] + 1:comma_indexes[i + 1]]) for i in range(len(comma_indexes) - 1)]
 
     # decode run length encoding back into the drawn digit (canvas data)
@@ -134,7 +138,7 @@ def post_data_to_image(image_data, img_size):
             pixel_nums[index] = pixel_value
             index += 1
 
-        # invert pixel colour
+        # run of same colour pixels ended, invert pixel colour
         pixel_value = 255 if pixel_value == 0 else 0
 
     # reshape into 2d array
@@ -175,7 +179,5 @@ def image_to_model_input(img):
     Converts a 28x28 PIL image to data that can be used as input for the Keras model
     """
 
-    img_size = img.size[0]
-
-    model_input = np.array(img).reshape((1, img_size, img_size, 1))
+    model_input = np.array(img).reshape((1, 28, 28, 1))
     return model_input

@@ -44,7 +44,7 @@
 
             <div class="row">
                 <div class="col-md-6 mx-auto text-center">
-                    <h4>Classification:</h2>
+                    <h4>Classification:</h4>
                 </div>
             </div>
 
@@ -56,7 +56,7 @@
 
             <div class="row">
                 <div class="col-md-6 mx-auto text-center">
-                    <h5 id="classify-time" class="font-italic"></h2>
+                    <h5 id="classify-time" class="font-italic"></h5>
                 </div>
             </div>
         </div>
@@ -70,9 +70,9 @@
             // current mouse position
             var currX = 0,
                 currY = 0;
-            // drawing colour and line width
+            // drawing colour and base line width
             var drawColour = "black",
-                lineWidth = 15;
+                baseLineWidth = 5;
             var drawPoints = [];
             var isMobile = false;
             
@@ -87,9 +87,7 @@
                 // initialise canvas
                 canvas = document.getElementById('digit-canvas');
                 ctx = canvas.getContext("2d");
-                ctx.fillStyle = drawColour;
                 ctx.strokeStyle = drawColour;
-                ctx.lineWidth = lineWidth;
                 ctx.lineCap = "round";
 
                 // register mouse event listeners
@@ -130,12 +128,14 @@
                 switch (action) {
                     case "mousedown":
                     case "touchstart":
+                        // update currX, currY from event vars
                         updateCursorPos(e)
 
                         // start drawing
                         if (!hasDrawn) {
                             // start a new list of drawing points
                             drawPoints = [];
+                            ctx.lineWidth = baseLineWidth;
                         }
                         else {
                             // user is continuing on their drawing, make sure this point
@@ -164,6 +164,7 @@
                     case "mousemove":
                     case "touchmove":
                         if (drawing) {
+                            // update currX, currY from event vars
                             updateCursorPos(e)
                             // draw a line from where the mouse was to where it is now
                             lineToPoint(currX, currY);
@@ -176,6 +177,7 @@
 
             function updateCursorPos(e) {
                 // update current mouse position based on event vars
+                // (different on mobile devices)
                 if (isMobile) {
                     currX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
                     currY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
@@ -195,6 +197,7 @@
             }
 
             function reset() {
+                // clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // clear classification
                 $("#classification").text("");
@@ -205,7 +208,6 @@
 
             function recreateDrawing() {
                 // redraw user draw digit on canvas from list of recorded points
-
                 if (drawPoints.length == 0) return;
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -226,7 +228,7 @@
 
             function autoResizeLineWidth() {
                 // automatically resize line width based on the size of the image the user drew
-                var canvasSize = 200;
+                var canvasSize = canvas.width;
 
                 // find the bounding box around what the user drew
                 var left = canvasSize;
@@ -237,10 +239,13 @@
                 var rawCanvasData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
                 for (var i = 3; i < rawCanvasData.length; i += 4) {
                     if (rawCanvasData[i] > 0) {
+                        // compute pixel index (since there are 4 components per pixel)
                         var index = (i - 3) / 4;
+                        // compute x & y values from index
                         var x = index % canvasSize;
                         var y = index / canvasSize;
 
+                        // update bounding box
                         left = Math.min(x, left);
                         right = Math.max(x, right);
                         top = Math.min(y, top);
@@ -249,9 +254,10 @@
                 }
 
                 // compute new line width
-                // (0.11 * width or height, whichever was longer, with a minimum of 1 and maximum of 15)
+                // (0.11 * width or height, whichever was bigger)
                 var lineWidthFraction = 0.11;
                 var newLineWith = Math.ceil(Math.max(right - left, bottom - top) * lineWidthFraction);
+                // clamp between 1 to 15
                 newLineWidth = Math.min(newLineWith, 15);
                 newLineWidth = Math.max(newLineWith, 1);
 
