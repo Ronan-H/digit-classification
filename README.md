@@ -2,7 +2,8 @@
 
 This is my 4th year *emerging technologies* assignment. There are two main parts: a [Jupyter Notebook](https://jupyter.org/) which trains a neural network on the [MNIST dataset of handwritten digits](http://yann.lecun.com/exdb/mnist/) step by step using [Keras](https://keras.io/), in order to later classify digits drawn by a user using a simple web application written using [Flask](https://www.fullstackpython.com/flask.html).
 
-<div align="center"><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></div>
+<kbd>
+<div align="center"><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></div></kbd>
 
 ## Notable files in this repo
 
@@ -59,31 +60,31 @@ Users draw a digit on a large (200x200) canvas, and the model classifies 28x28 d
 <div align="center">Start with the user drawn image:</div>
 <br />
 
-<div align="center"><img style="border: 1px solid red" src="./readme-resources/mnistify-example/0-canvas-img.png" alt="User drawn image" width="200px" align="center"></div>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/0-canvas-img.png" alt="User drawn image" width="200px" align="center"></div></kbd>
 <br />
 
 <div align="center">1. Crop image to fit digit</div>
 <br />
 
-<div align="center"><img style="border: 1px solid red" src="./readme-resources/mnistify-example/1-cropped.png" alt="Cropped digit" width="65px" align="center"></div>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/1-cropped.png" alt="Cropped digit" width="65px" align="center"></div></kbd>
 <br />
 
 <div align="center">2. Extend image out into a square (width, height become whichever is bigger)</div>
 <br />
 
-<div align="center"><img style="border: 1px solid red" src="./readme-resources/mnistify-example/2-squared.png" alt="Cropped digit" width="200px" align="center"></div>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/2-squared.png" alt="Cropped digit" width="200px" align="center"></div></kbd>
 <br />
 
 <div align="center">3. Scale the image down to 20x20, and expand edges out to 28x28 (image gets aliased while doing this)</div>
 <br />
 
-<div align="center"><img style="border: 1px solid red" src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="200px%" align="center"></div>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="200px" align="center"></div></kbd>
 <br />
 
-<div align="center">4. Center digit within image based on Center of Mass</div>
+<div align="center">4. Center digit within image based on Center of Mass<p>(not particularly noticable in this example)</p></div>
 <br />
 
-<div align="center"><img style="border: 1px solid red" src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="15%" align="center"></div>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="200px" align="center"></div></kbd>
 <br />
 
 Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
