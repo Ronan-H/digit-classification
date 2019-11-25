@@ -2,8 +2,7 @@
 
 This is my 4th year *emerging technologies* assignment. There are two main parts: a [Jupyter Notebook](https://jupyter.org/) which trains a neural network on the [MNIST dataset of handwritten digits](http://yann.lecun.com/exdb/mnist/) step by step using [Keras](https://keras.io/), in order to later classify digits drawn by a user using a simple web application written using [Flask](https://www.fullstackpython.com/flask.html).
 
-<kbd>
-<div align="center"><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></div></kbd>
+<div align="center"><kbd><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></kbd></div>
 
 ## Notable files in this repo
 
@@ -81,7 +80,7 @@ Users draw a digit on a large (200x200) canvas, and the model classifies 28x28 d
 <div align="center"><kbd><img src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="200px" align="center"></div></kbd>
 <br />
 
-<div align="center">4. Center digit within image based on Center of Mass<p>(not particularly noticable in this example)</p></div>
+<div align="center">4. Center digit within image based on Center of Mass<p>(not very noticable in this example)</p></div>
 <br />
 
 <div align="center"><kbd><img src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="200px" align="center"></div></kbd>
