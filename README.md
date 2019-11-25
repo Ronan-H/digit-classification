@@ -14,7 +14,7 @@ This is my 4th year *emerging technologies* assignment. There are two main parts
 * **/flask**: files relating to the Flask web application
   * **app.py**: entry point to the web application
   * **image_ops.py**: image operations (decoding from POST request, "MNISTifying", image to model input, etc)
-  * **static/**: static resources (main page, styling)
+  * **static/**: static resources (main page HTML, styling, and javascript files)
   
 
 ## How to run the web application
