@@ -6,24 +6,30 @@ This is my 4th year *emerging technologies* assignment. There are two main parts
 
 ## Notable files in this repo
 
-* **/model**: files relating to the Keras model (neural network)
-  * **model.ipynb**: Jupyter Notebook; building, training, and evaluating the neural network.
-  * **model.h5**: neural network model serialized to a file (for use in the Flask web application)
-
+* **model.ipynb**: Jupyter Notebook; building, training, and evaluating the neural network used to recognize handwritten digits.
 
 * **/flask**: files relating to the Flask web application
   * **app.py**: entry point to the web application
   * **image_ops.py**: image operations (decoding from POST request, "MNISTifying", image to model input, etc)
+  * **model.h5**: neural network model serialized to a file
   * **static/**: static resources (main page HTML, styling, and javascript files)
   
 
+## Requirements
+
+*(In some cases, for below, you may need to use the **python** command instead of the **python3** command, or the **pip** command instead of the **pip3** command)*
+
+To run the flask server or run/make changes to the JupyterNotebook, you will need to install **Python 3**, along with a number of modules. You can download Python [here](https://www.python.org/downloads/), and then install the required modules using the following command:
+
+**pip3 install numpy pillow matplotlib flask jupyterlab tensorflow keras**
+
+Since there could be issues with installing the latest version of all these packages, you can also run **pip3 install -r requirements.txt** from this repo to install a set of modules with versions that definetly work for this project.
+
+*(**requirements.txt** has a lot more modules listed than the command above, because it includes all the dependencies needed for those modules)*
+
 ## How to run the web application
 
-*Prerequisites: Python 3, TensorFlow, Keras, Flask. Install using [pip](https://pypi.org/project/pip/) and/or [Anaconda](https://www.anaconda.com/distribution/)*
-
 Run **python3 app.py** from the *flask* directory.
-
-(or **python app.py**, depending on your installation)
 
 The TensorFlow warnings can safely be ignored.
 
@@ -34,8 +40,6 @@ Visit **http://127.0.0.1:5000/** in your web browser to view the web application
 Draw a digit on the canvas using your mouse. When you release left click, the digit you drew should be classified automatically and displayed below the canvas. Clicking "Clear" erases the whole canvas.
 
 ## How to make changes and run the model in Jupyter Notebook
-
-*Prerequisites: Python 3, TensorFlow, Keras, Flask. Install using [pip](https://pypi.org/project/pip/) and/or [Anaconda](https://www.anaconda.com/distribution/)*
 
 Run **jupyter lab** from the *flask* directory.
 

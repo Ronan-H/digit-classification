@@ -6,7 +6,7 @@ import image_ops
 
 app = Flask(__name__)
 # load model from file
-model = keras.models.load_model("../model/model.h5")
+model = keras.models.load_model("model.h5")
 
 
 @app.route('/')
