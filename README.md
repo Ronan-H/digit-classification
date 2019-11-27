@@ -21,9 +21,11 @@ This is my 4th year *emerging technologies* assignment. There are two main parts
 
 To run the flask server or run/make changes to the JupyterNotebook, you will need to install **Python 3**, along with a number of modules. You can download Python [here](https://www.python.org/downloads/), and then install the required modules using the following command:
 
-**pip3 install numpy pillow matplotlib flask jupyterlab tensorflow keras**
+> pip3 install numpy pillow matplotlib flask jupyterlab tensorflow keras
 
-Since there could be issues with installing the latest version of all these packages, you can also run **pip3 install -r requirements.txt** from this repo to install a set of modules with versions that definetly work for this project.
+Since there could be issues with installing the latest version of all these packages, you can also run this from this repo to install a set of modules with versions that definetly work for this project:
+
+> pip3 install -r requirements.txt
 
 *(**requirements.txt** has a lot more modules listed than the command above, because it includes all the dependencies needed for those modules)*
 
@@ -69,25 +71,25 @@ Users draw a digit on a large (200x200) canvas, and the model classifies 28x28 d
 <div align="center">1. Crop image to fit digit</div>
 <br />
 
-<div align="center"><kbd><img src="./readme-resources/mnistify-example/1-cropped.png" alt="Cropped digit" width="65px" align="center"></div></kbd>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/1-cropped.png" alt="Cropped digit" width="63px" align="center"></div></kbd>
 <br />
 
 <div align="center">2. Extend image out into a square (width, height become whichever is bigger)</div>
 <br />
 
-<div align="center"><kbd><img src="./readme-resources/mnistify-example/2-squared.png" alt="Cropped digit" width="200px" align="center"></div></kbd>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/2-squared.png" alt="Cropped digit" width="113px" align="center"></div></kbd>
 <br />
 
 <div align="center">3. Scale the image down to 20x20, and expand edges out to 28x28 (image gets aliased while doing this)</div>
 <br />
 
-<div align="center"><kbd><img src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="200px" align="center"></div></kbd>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/3-scaled.png" alt="Scaled digit" width="113px" align="center"></div></kbd>
 <br />
 
 <div align="center">4. Center digit within image based on Center of Mass<p>(not very noticable in this example)</p></div>
 <br />
 
-<div align="center"><kbd><img src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="200px" align="center"></div></kbd>
+<div align="center"><kbd><img src="./readme-resources/mnistify-example/4-centered-final.png" alt="Center of mass centering applied" width="113px" align="center"></div></kbd>
 <br />
 
 Doing this produces images that are more or less indistinguishable from digits from the MNIST dataset.
