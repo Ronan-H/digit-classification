@@ -4,6 +4,18 @@ This is my 4th year *emerging technologies* assignment. There are two main parts
 
 <div align="center"><kbd><img style="border: thin solid black" src="./readme-resources/web-app.jpg" alt="Digit classification web app running on Android" width="300px" align="center"></kbd></div>
 
+
+# Table of contents
+* [Notable files in this repo](#notable-files-in-this-repo)
+* [Requirements](#requirements)
+* [How to run the web application](#how-to-run-the-web-application)
+* [How to make changes and run the model in Jupyter Notebook](#how-to-make-changes-and-run-the-model-in-jupyter-notebook)
+* [How the model works](#how-the-model-works)
+* ["MNISTifying" user drawn digits](#mnistifying-user-drawn-digits)
+* [Adaptive canvas brush stroke size](#adaptive-canvas-brush-stroke-size)
+* [Canvas image encoding](#canvas-image-encoding)
+
+
 ## Notable files in this repo
 
 * **model.ipynb**: Jupyter Notebook; building, training, and evaluating the neural network used to recognize handwritten digits.
