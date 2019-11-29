@@ -33,11 +33,11 @@ This is my 4th year *emerging technologies* assignment. There are two main parts
 
 To run the flask server or run/make changes to the JupyterNotebook, you will need to install **Python 3**, along with a number of modules. You can download Python [here](https://www.python.org/downloads/), and then install the required modules using the following command:
 
-> pip3 install numpy pillow matplotlib flask jupyterlab tensorflow keras
+`pip3 install numpy pillow matplotlib flask jupyterlab tensorflow keras`
 
 Since there could be issues with installing the latest version of all these packages, you can also run this from this repo to install a set of modules with versions that definetly work for this project:
 
-> pip3 install -r requirements.txt
+`pip3 install -r requirements.txt`
 
 *(**requirements.txt** has a lot more modules listed than the command above, because it includes all the dependencies needed for those modules)*
 
@@ -70,7 +70,7 @@ Users draw a digit on a large (200x200) canvas, and the model classifies 28x28 d
 
 > The original black and white (bilevel) images from NIST were size normalized to fit in a 20x20 pixel box while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.
 
-> (from http://yann.lecun.com/exdb/mnist/)
+*(from http://yann.lecun.com/exdb/mnist/)*
 
 ...the predictions should be much more accurate, so that's what I did. I broke this down into 4 steps:
 
